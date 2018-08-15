@@ -1,0 +1,89 @@
+#!/bin/bash
+
+# Enable sources, add PPAs and update sources: 
+# sudo sed 's/# deb/deb/' -i /etc/apt/sources.list
+
+# sudo add-apt-repository ppa:tiheum/equinox
+# sudo add-apt-repository ppa:am-monkeyd/nautilus-elementary-ppa
+#sudo add-apt-repository -y ppa:ubuntu-elisp # for emacs
+sudo apt-get update
+sudo apt-get upgrade
+
+# required for emacs to configure
+sudo apt-get install build-essential texinfo libx11-dev libxpm-dev libjpeg-dev libpng-dev libgif-dev libtiff-dev libgtk2.0-dev libncurses-dev
+
+## installing from source
+# emacs
+if [ ! -d "/usr/src/emacs-25.3" ]
+then
+    cd /usr/src/
+    sudo wget --verbose http://ftp.snt.utwente.nl/pub/software/gnu/emacs/emacs-25.3.tar.gz /usr/src
+    sudo tar -xvf emacs-25.3.tar.gz
+    cd emacs-25.3
+    sudo ./configure
+    sudo make && sudo make install
+    cd
+fi
+
+# Symlinking home folders.
+cd ~/
+# check if emacs dir exists
+if [ -d "~/.emacs.d" ]
+then
+    mv ~/.emacs.d ~/.emacs.d.old
+    ln -s ~/Dropbox/.emacs.d/ ~/
+else
+    ln -s ~/Dropbox/.emacs.d/ ~/
+fi
+
+if [ -f "~/.profile" ]
+then
+    mv ~/.profile ~/.profile.old
+    ln  ~/Dropbox/.profile ~/
+else
+    ln ~/Dropbox/.profile ~/
+fi
+
+if [ -f "~/.vimrc" ]
+then
+    mv ~/.vimrc ~/.vimrc.old
+    ln  ~/Dropbox/.vimrc ~/
+else
+    ln  ~/Dropbox/.vimrc ~/
+fi
+
+ln -s ~/Dropbox/org ~/
+ln -s ~/Dropbox/programming ~/
+ln -s ~/Dropbox/spacemacs ~/
+ln -s ~/Dropbox/TODO/ ~/
+
+
+# Adding software:
+sudo apt-get install -y dconf-tools 
+
+# Python
+sudo apt-get install -y python-pip virtualenv
+
+# pip
+pip install nikola
+
+# c, c++, java
+sudo apt-get install -y global
+
+# restart nautilus (req. to activate elementary):
+nautilus -q
+
+# remove lock screen
+
+# gsettings set org.gnome.desktop.screensaver lock-enabled false
+
+# Altering settings power management (OLD method):
+
+# gconftool-2 --set --t# ype string /apps/gnome-power-manager/critical_battery       shutdown 
+# gconftool-2 --set --type bool   /apps/gnome-power-manager/battery_reduce         false
+# gconftool-2 --set --type bool   /apps/gnome-power-manager/idle_dim_battery       false
+# gconftool-2 --set --type string /apps/gnome-power-manager/lid_ac                 blank
+# gconftool-2 --set --type string /apps/gnome-power-manager/lid_battery            blank
+# gconftool-2 --set --type string /apps/gnome-power-manager/sleep_computer_ac      0
+# gconftool-2 --set --type string /apps/gnome-power-manager/sleep_computer_battery 0
+# gconftool-2 --set --type string /apps/gnome-power-manager/power                  interactive
